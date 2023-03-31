@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 
 export default {
-  type: Phaser.WEBGL,
+  type: Phaser.AUTO,
   parent: 'game',
   scale: {
     width: 800,

@@ -3,7 +3,8 @@ import Phaser from 'phaser';
 
 export default class Demo extends Phaser.Scene {
     private ball: Phaser.Physics.Arcade.Image & { body: Phaser.Physics.Arcade.Body } | undefined;
-    private paddle: Phaser.Physics.Arcade.Image & { body: Phaser.Physics.Arcade.Body } | undefined;
+    private paddle: Phaser.Physics.Arcade.Sprite & { body: Phaser.Physics.Arcade.Body } | undefined;
+    private bricks: Phaser.Physics.Arcade.StaticGroup | undefined;
 
     constructor() {
         super('Breakout');
@@ -12,6 +13,7 @@ export default class Demo extends Phaser.Scene {
     preload() {
         this.load.image('logo', 'assets/phaser3-logo.png');
         this.load.atlas('assets', 'assets/breakout.png', 'assets/breakout.json');
+        this.load.spritesheet('paddle', 'assets/paddle.png', {frameWidth: 104, frameHeight: 24});
     }
 
     create() {
@@ -19,9 +21,10 @@ export default class Demo extends Phaser.Scene {
         this.physics.world.setBoundsCollision(true, true, true, false);
 
         //  Create the bricks in a 10x6 grid
-        var bricks: Phaser.Physics.Arcade.StaticGroup = this.physics.add.staticGroup({
+        this.bricks = this.physics.add.staticGroup({
             key: 'assets',
-            frame: ['brown.png', 'grey.png', 'purple.png', 'blue.png', 'light_blue.png', 'dark_green.png', 'green.png', 'yellow.png', 'orange.png', "red.png"],
+            //frame: ['brown.png', 'grey.png', 'purple.png', 'blue.png', 'light_blue.png', 'dark_green.png', 'green.png', 'yellow.png', 'orange.png', "red.png"],
+            frame: ['brown.png'],
             frameQuantity: 10,
             gridAlign: {width: 10, height: 10, cellWidth: 64, cellHeight: 32, x: 112, y: 50}
         });
@@ -29,10 +32,19 @@ export default class Demo extends Phaser.Scene {
         this.ball = this.physics.add.image(400, 700, 'assets', 'knuddel.png').setCollideWorldBounds(true).setBounce(1);
         this.ball.setData('onPaddle', true);
 
-        this.paddle = this.physics.add.image(400, 750, 'assets', 'paddle.png').setImmovable();
+        this.paddle = this.physics.add.sprite(400, 750, 'assets', 'paddle.png').setImmovable();
+
+        this.anims.create({
+            key: 'default',
+            frames: this.anims.generateFrameNumbers('paddle', {start: 0, end: 2}),
+            frameRate: 10,
+            repeat: -1
+        });
+
+        this.paddle.anims.play('default', true);
 
         //  Our colliders
-        this.physics.add.collider(this.ball, bricks, hitBrick, undefined, this);
+        this.physics.add.collider(this.ball, this.bricks, hitBrick, undefined, this);
         this.physics.add.collider(this.ball, this.paddle, hitPaddle, undefined, this);
 
         //  Input events
@@ -52,7 +64,7 @@ export default class Demo extends Phaser.Scene {
 
         }, this);
 
-        this.input.on('pointerup', function (this: Demo, pointer: any) {
+        this.input.on('pointerup', function (this: Demo) {
             if (this.ball != undefined) {
                 if (this.ball.getData('onPaddle')) {
                     this.ball.setVelocity(-75, -300);
@@ -66,9 +78,12 @@ export default class Demo extends Phaser.Scene {
         function hitBrick(this: Demo, ball: any, brick: any): ArcadePhysicsCallback | undefined {
             brick.disableBody(true, true);
 
-            if (bricks.countActive() === 0 && this.paddle != undefined) {
-                resetLevel(ball, this.paddle, bricks);
+            if (this.bricks != undefined) {
+                if (this.bricks.countActive() === 0 && this.paddle != undefined) {
+                    this.resetLevel();
+                }
             }
+
             return undefined;
         }
 
@@ -89,15 +104,16 @@ export default class Demo extends Phaser.Scene {
                 ball.setVelocityX(2 + Math.random() * 8);
             }
         }
+    }
 
-        function resetLevel(this: any, ball: Phaser.Physics.Arcade.Image, paddle: Phaser.Physics.Arcade.Image, bricks: Phaser.Physics.Arcade.StaticGroup): void {
-            this.resetBall();
+    resetLevel(): void {
+        this.resetBall();
+        if (this.bricks != undefined) {
+            this.bricks.children.each(function (brick) {
 
-            //bricks.children.each()
-        }
+                (brick as Phaser.Physics.Arcade.Sprite).enableBody(false, 0, 0, true, true);
 
-        function resetBrick(brick: Phaser.Physics.Arcade.Image) {
-            brick.enableBody(false, 0, 0, true, true);
+            });
         }
     }
 
