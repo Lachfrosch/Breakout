@@ -9,6 +9,8 @@
 
 This is the classic game of Breakout recreated using [Phaser 3](https://github.com/photonstorm/phaser) starter with [TypeScript](https://www.typescriptlang.org/), [Rollup](https://rollupjs.org) with ⚡️ lightning fast HMR through [Vite](https://vitejs.dev/).
 
+This game can be played directly in your browser at https://lachfrosch.github.io/Breakout/.
+
 ## Available Commands
 
 | Command | Description |
