@@ -92,7 +92,7 @@ export default class Demo extends Phaser.Scene {
         function hitBrick(this: Demo, ball: any, brick: any): ArcadePhysicsCallback | undefined {
             brick.disableBody(true, true); //Hide the hit brick
             let score = this.data.get('score');
-            this.data.set('score', score + (100 * (1 + (this.combo / 10)))); //Give 10% Bonus per brick in a row
+            this.data.set('score', score + Math.round(100 * (1 + (this.combo / 10)))); //Give 10% Bonus per brick in a row
             this.combo++;
 
             //Check if bricks are remaining
