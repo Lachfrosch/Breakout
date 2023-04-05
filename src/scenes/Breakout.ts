@@ -17,6 +17,7 @@ export default class Demo extends Phaser.Scene {
         this.load.image('logo', 'assets/phaser3-logo.png');
         this.load.atlas('assets', 'assets/breakout.png', 'assets/breakout.json');
         this.load.spritesheet('paddle', 'assets/paddle.png', {frameWidth: 104, frameHeight: 24});
+        this.load.audio('plop', [ 'assets/plop.mp3' ]);
     }
 
     create() {
@@ -27,6 +28,8 @@ export default class Demo extends Phaser.Scene {
 
         //Set the Location and Size of Text
         this.text = this.add.text(50, 750, '', {font: '16px Courier', color: '#00ff00'});
+
+        let plop = this.sound.add('plop');
 
         //Enable world bounds, but disable the floor
         this.physics.world.setBoundsCollision(true, true, true, false);
@@ -90,6 +93,7 @@ export default class Demo extends Phaser.Scene {
         }, this);
 
         function hitBrick(this: Demo, ball: any, brick: any): ArcadePhysicsCallback | undefined {
+            plop.play();
             brick.disableBody(true, true); //Hide the hit brick
             let score = this.data.get('score');
             this.data.set('score', score + Math.round(100 * (1 + (this.combo / 10)))); //Give 10% Bonus per brick in a row
