@@ -12,6 +12,7 @@ export default class Demo extends Phaser.Scene {
     private sfxHitPaddle!: Phaser.Sound.BaseSound;
     private sfxLostLife!: Phaser.Sound.BaseSound;
     private sfxGameOver!: Phaser.Sound.BaseSound;
+    private sfxBackground!: Phaser.Sound.BaseSound;
 
     constructor() {
         super('Breakout');
@@ -27,6 +28,7 @@ export default class Demo extends Phaser.Scene {
         this.load.audio('sfxHitPaddle', ['assets/HitPaddle.mp3']);
         this.load.audio('sfxLostLife', ['assets/LostLife.mp3']);
         this.load.audio('sfxGameOver', ['assets/GameOver.mp3']);
+        this.load.audio('sfxBackground', ['assets/Background.mp3']);
     }
 
     create() {
@@ -44,6 +46,7 @@ export default class Demo extends Phaser.Scene {
         this.sfxHitPaddle = this.sound.add('sfxHitPaddle');
         this.sfxLostLife = this.sound.add('sfxLostLife');
         this.sfxGameOver = this.sound.add('sfxGameOver');
+        this.sfxBackground = this.sound.add('sfxBackground');
 
         //Enable world bounds, but disable the floor so ball bounces back
         this.physics.world.setBoundsCollision(true, true, true, false);
@@ -106,6 +109,8 @@ export default class Demo extends Phaser.Scene {
                 let leftOrRight = Math.random() < 0.5 ? -1 : 1; //Randomly decide to Initially go left or right
                 this.ball.setVelocity(Math.random() * leftOrRight * 100, -300); // Randomly decide the Angle
                 this.ball.setData('onPaddle', false);
+                //Start Background Music
+                this.sfxBackground.play();
             }
         }, this);
 
@@ -215,6 +220,8 @@ export default class Demo extends Phaser.Scene {
             //If ball is under paddle
             this.combo = 0;
             let lives: number = this.data.get('lives')
+
+            this.sfxBackground.stop();
 
             if (lives > 0) {
                 this.sfxLostLife.play();
