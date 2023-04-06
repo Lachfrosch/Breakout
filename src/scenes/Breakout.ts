@@ -51,7 +51,7 @@ export default class Demo extends Phaser.Scene {
         let canvasWidth = this.sys.canvas.width;
 
         let rowCount: number = 10;
-        let colCount: number = 17;
+        let colCount: number = 10;
         //Create the bricks in a grid
         this.bricks = this.physics.add.staticGroup({
             key: 'assets',
