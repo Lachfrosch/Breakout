@@ -213,6 +213,7 @@ export default class Demo extends Phaser.Scene {
 
         if (this.ball.y > this.paddle.y) {
             //If ball is under paddle
+            this.combo = 0;
             let lives: number = this.data.get('lives')
 
             if (lives > 0) {
